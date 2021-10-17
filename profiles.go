@@ -56,14 +56,15 @@ type PlayerSummary struct {
 	SmallAvatarURL  string `json:"avatar"`       // 32x32
 	MediumAvatarURL string `json:"avatarmedium"` // 64x64
 	LargeAvatarURL  string `json:"avatarfull"`   // 184x184
+	AvatarHash      string `json:"avatarhash"`
 
 	TimeCreated   int64  `json:",omitempty"`
 	RealName      string `json:",omitempty"`
 	GameExtraInfo string `json:",omitempty"`
 
 	PrimaryClanID uint64 `json:",string,omitempty"`
-	GameID uint64 `json:",string,omitempty"`
-	GameServerIp string `json:",omitempty"`
+	GameID        uint64 `json:",string,omitempty"`
+	GameServerIp  string `json:",omitempty"`
 }
 
 type playerSummaryJSON struct {

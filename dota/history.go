@@ -1,7 +1,7 @@
 package dota
 
 import (
-	"github.com/fasmat/go-steamapi"
+	"github.com/an0nfunc/go-steamapi"
 	"net/url"
 	"strconv"
 	"time"
@@ -53,7 +53,7 @@ func GetMatchHistory(filter MatchFilter, gameMode DotaGameMode, app int, apiKey 
 	vals := url.Values{}
 	vals.Add("key", apiKey)
 
-	// Add vals to url if any filter value was set 
+	// Add vals to url if any filter value was set
 	if gameMode != AnyMode {
 		vals.Add("game_mode", strconv.FormatUint(uint64(gameMode), 10))
 	}

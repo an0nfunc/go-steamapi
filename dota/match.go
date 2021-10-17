@@ -1,7 +1,7 @@
 package dota
 
 import (
-	"github.com/fasmat/go-steamapi"
+	"github.com/an0nfunc/go-steamapi"
 	"net/url"
 	"strconv"
 )

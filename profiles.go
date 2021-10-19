@@ -75,21 +75,38 @@ type playerSummaryJSON struct {
 
 // GetPlayerSummaries Fetches the player summaries for the given Steam Ids.
 func GetPlayerSummaries(ids []uint64, apiKey string) ([]PlayerSummary, error) {
+	var allResp []PlayerSummary
 	var getPlayerSummaries = NewSteamMethod("ISteamUser", "GetPlayerSummaries", 2)
-	strIds := make([]string, len(ids))
-	for _, id := range ids {
-		strIds = append(strIds, strconv.FormatUint(id, 10))
-	}
-	vals := url.Values{}
-	vals.Add("key", apiKey)
-	vals.Add("steamids", strings.Join(strIds, ","))
 
-	var resp playerSummaryJSON
-	err := getPlayerSummaries.Request(vals, &resp)
-	if err != nil {
-		return nil, err
+	strIds := make([][]string, 0)
+	var curArr []string
+	for i, id := range ids {
+		if i%100 == 0 {
+			strIds = append(strIds, curArr)
+			curArr = []string{}
+		}
+
+		curArr = append(curArr, strconv.FormatUint(id, 10))
 	}
-	return resp.Response.Players, nil
+
+	if len(curArr) > 0 {
+		strIds = append(strIds, curArr)
+	}
+
+	for _, strId := range strIds {
+		vals := url.Values{}
+		vals.Add("key", apiKey)
+		vals.Add("steamids", strings.Join(strId, ","))
+
+		var resp playerSummaryJSON
+		err := getPlayerSummaries.Request(vals, &resp)
+		if err != nil {
+			return nil, err
+		}
+		allResp = append(allResp, resp.Response.Players...)
+	}
+
+	return allResp, nil
 }
 
 // ResolveVanityURLResponse resolves the response from steam

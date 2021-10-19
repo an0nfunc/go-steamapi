@@ -3,7 +3,6 @@ package steamapi
 import (
 	"errors"
 	"net/url"
-	"strconv"
 	"strings"
 )
 
@@ -78,20 +77,8 @@ func GetPlayerSummaries(ids []uint64, apiKey string) ([]PlayerSummary, error) {
 	var allResp []PlayerSummary
 	var getPlayerSummaries = NewSteamMethod("ISteamUser", "GetPlayerSummaries", 2)
 
-	strIds := make([][]string, 0)
-	var curArr []string
-	for i, id := range ids {
-		if i%100 == 0 {
-			strIds = append(strIds, curArr)
-			curArr = []string{}
-		}
-
-		curArr = append(curArr, strconv.FormatUint(id, 10))
-	}
-
-	if len(curArr) > 0 {
-		strIds = append(strIds, curArr)
-	}
+	// split into batches of 100 steamids, since endpoint is limited to 100
+	strIds := steamIDs2SplitArray(ids, 100)
 
 	for _, strId := range strIds {
 		vals := url.Values{}

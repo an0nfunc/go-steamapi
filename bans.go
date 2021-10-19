@@ -2,7 +2,6 @@ package steamapi
 
 import (
 	"net/url"
-	"strconv"
 	"strings"
 )
 
@@ -23,21 +22,24 @@ type PlayerBan struct {
 
 // GetPlayerBans takes a list of steamIDs and returns PlayerBan slice
 func GetPlayerBans(steamIDs []uint64, apiKey string) ([]PlayerBan, error) {
-	var getPlayerBans = NewSteamMethod("ISteamUser", "GetPlayerBans", 1)
-	strSteamIDs := make([]string, len(steamIDs))
-	for _, id := range steamIDs {
-		strSteamIDs = append(strSteamIDs, strconv.FormatUint(id, 10))
+	var allResp []PlayerBan
+	var getPlayerSummaries = NewSteamMethod("ISteamUser", "GetPlayerBans", 1)
+
+	// split into batches of 100 steamids, since endpoint is limited to 100
+	strIds := steamIDs2SplitArray(steamIDs, 100)
+
+	for _, strId := range strIds {
+		vals := url.Values{}
+		vals.Add("key", apiKey)
+		vals.Add("steamids", strings.Join(strId, ","))
+
+		var resp playerBansJSON
+		err := getPlayerSummaries.Request(vals, &resp)
+		if err != nil {
+			return nil, err
+		}
+		allResp = append(allResp, resp.Players...)
 	}
 
-	data := url.Values{}
-	data.Add("key", apiKey)
-	data.Add("steamids", strings.Join(strSteamIDs, ","))
-
-	var resp playerBansJSON
-	err := getPlayerBans.Request(data, &resp)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.Players, nil
+	return allResp, nil
 }

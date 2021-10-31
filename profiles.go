@@ -33,7 +33,7 @@ const (
 	Busy
 	// Away is away
 	Away
-	// Snooze is sniooze
+	// Snooze is snooze
 	Snooze
 	// LookingToTrade is looking to trade
 	LookingToTrade

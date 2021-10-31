@@ -12,9 +12,9 @@ type SteamApp struct {
 }
 
 type appListJson struct {
-	Applist struct {
+	AppList struct {
 		Apps []SteamApp
-	}
+	} `json:"applist"`
 }
 
 type upToDateCheckJson struct {
@@ -23,8 +23,8 @@ type upToDateCheckJson struct {
 		UpToDate       bool   `json:"up_to_date"`
 		Listable       bool   `json:"version_is_listable"`
 		CurrentVersion uint   `json:"required_version,omitempty"`
-		Message        string `json:"omitempty"`
-		Error          string `json:"omitempty"`
+		Message        string `json:",omitempty"`
+		Error          string `json:",omitempty"`
 	}
 }
 
@@ -36,7 +36,7 @@ func GetAppList() ([]SteamApp, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.Applist.Apps, nil
+	return resp.AppList.Apps, nil
 }
 
 func IsAppUpToDate(app int, version uint) (bool, error) {

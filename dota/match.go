@@ -15,47 +15,47 @@ type MatchResult struct {
 	Season                uint `json:"item_0,omitempty"`
 	RadiantWin            bool `json:"radiant_win"`
 	Duration              uint
-	MatchStart            uint               `json:"start_time"`
-	MatchId               uint64             `json:"match_id"`
-	MatchSequenceNo       uint               `json:"match_seq_num"`
-	TowerStatusRadiant    DotaTowerStatus    `json:"tower_status_radiant"`
-	TowerStatusDire       DotaTowerStatus    `json:"tower_status_dire"`
-	BarracksStatusRadiant DotaBarracksStatus `json:"barracks_status_radiant"`
-	BarracksStatusDire    DotaBarracksStatus `json:"barracks_status_dire"`
+	MatchStart            uint           `json:"start_time"`
+	MatchId               uint64         `json:"match_id"`
+	MatchSequenceNo       uint           `json:"match_seq_num"`
+	TowerStatusRadiant    TowerStatus    `json:"tower_status_radiant"`
+	TowerStatusDire       TowerStatus    `json:"tower_status_dire"`
+	BarracksStatusRadiant BarracksStatus `json:"barracks_status_radiant"`
+	BarracksStatusDire    BarracksStatus `json:"barracks_status_dire"`
 	Cluster               uint
-	FirstBloodTime        int           `json:"first_blood_time"`
-	LobbyType             DotaLobbyType `json:"lobby_type"`
-	HumanPlayers          uint          `json:"human_players"`
+	FirstBloodTime        int       `json:"first_blood_time"`
+	LobbyType             LobbyType `json:"lobby_type"`
+	HumanPlayers          uint      `json:"human_players"`
 	LeagueId              uint
-	PositiveVotes         uint         `json:"positive_votes"`
-	NegativeVotes         uint         `json:"negative_votes"`
-	GameMode              DotaGameMode `json:"game_mode"`
-	PicksBans             []PickBan    `json:"picks_bans,omitempty"`
+	PositiveVotes         uint      `json:"positive_votes"`
+	NegativeVotes         uint      `json:"negative_votes"`
+	GameMode              GameMode  `json:"game_mode"`
+	PicksBans             []PickBan `json:"picks_bans,omitempty"`
 }
 
 type Player struct {
-	AccountId     uint32         `json:"account_id"`
-	PlayerSlot    DotaPlayerSlot `json:"player_slot"`
-	HeroId        uint           `json:"hero_id"`
-	Item0         uint           `json:"item_0"`
-	Item1         uint           `json:"item_1"`
-	Item2         uint           `json:"item_2"`
-	Item3         uint           `json:"item_3"`
-	Item4         uint           `json:"item_4"`
-	Item5         uint           `json:"item_5"`
+	AccountId     uint32     `json:"account_id"`
+	PlayerSlot    PlayerSlot `json:"player_slot"`
+	HeroId        uint       `json:"hero_id"`
+	Item0         uint       `json:"item_0"`
+	Item1         uint       `json:"item_1"`
+	Item2         uint       `json:"item_2"`
+	Item3         uint       `json:"item_3"`
+	Item4         uint       `json:"item_4"`
+	Item5         uint       `json:"item_5"`
 	Kills         uint
 	Deaths        uint
 	Assists       uint
-	LeaverStatus  DotaLeaverStatus `json:"leaver_status"`
-	GoldRemaining uint             `json:"gold"`
-	LastHits      uint             `json:"last_hits"`
-	Denies        uint             `json:"denies"`
-	GPM           uint             `json:"gold_per_min"`
-	XPM           uint             `json:"xp_per_min"`
-	GoldSpent     uint             `json:"gold_spent"`
-	HeroDamage    uint             `json:"hero_damage"`
-	TowerDamage   uint             `json:"tower_damage"`
-	HeroHealing   uint             `json:"hero_healing"`
+	LeaverStatus  LeaverStatus `json:"leaver_status"`
+	GoldRemaining uint         `json:"gold"`
+	LastHits      uint         `json:"last_hits"`
+	Denies        uint         `json:"denies"`
+	GPM           uint         `json:"gold_per_min"`
+	XPM           uint         `json:"xp_per_min"`
+	GoldSpent     uint         `json:"gold_spent"`
+	HeroDamage    uint         `json:"hero_damage"`
+	TowerDamage   uint         `json:"tower_damage"`
+	HeroHealing   uint         `json:"hero_healing"`
 	Level         uint
 	Abilities     []Ability `json:"ability_upgrades"`
 	Units         []Unit    `json:"additional_units,omitempty"`
@@ -80,17 +80,17 @@ type Unit struct {
 type PickBan struct {
 	IsPick bool `json:"is_pick"`
 	HeroId uint `json:"hero_id"`
-	Team   DotaTeam
+	Team   Team
 	Order  uint
 }
 
-// Fetches statistics of a specific Match.
-func GetMatchDetails(matchid uint64, app int, apiKey string) (*MatchResult, error) {
+// GetMatchDetails Fetches statistics of a specific Match.
+func GetMatchDetails(matchId uint64, app int, apiKey string) (*MatchResult, error) {
 	getMatchDetails := steamapi.NewSteamMethod("IDOTA2Match_"+strconv.Itoa(app), "GetMatchDetails", 1)
 
 	vals := url.Values{}
 	vals.Add("key", apiKey)
-	vals.Add("match_id", strconv.FormatUint(matchid, 10))
+	vals.Add("match_id", strconv.FormatUint(matchId, 10))
 
 	var resp matchResultJson
 	err := getMatchDetails.Request(vals, &resp)

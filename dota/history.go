@@ -9,8 +9,8 @@ import (
 
 type MatchFilter struct {
 	PlayerName       string
-	HeroId           DotaHero
-	Skill            DotaSkill
+	HeroId           Hero
+	Skill            Skill
 	DateMin          time.Time
 	DateMax          time.Time
 	MinPlayers       uint
@@ -34,20 +34,20 @@ type HistoryResult struct {
 }
 
 type Match struct {
-	MatchId         uint64        `json:"match_id"`
-	MatchSequenceNo uint          `json:"match_seq_num"`
-	MatchStart      uint          `json:"start_time"`
-	LobbyType       DotaLobbyType `json:"lobby_type"`
+	MatchId         uint64    `json:"match_id"`
+	MatchSequenceNo uint      `json:"match_seq_num"`
+	MatchStart      uint      `json:"start_time"`
+	LobbyType       LobbyType `json:"lobby_type"`
 	Players         []PlayerSummary
 }
 
 type PlayerSummary struct {
-	AccountId  uint32         `json:"account_id"`
-	PlayerSlot DotaPlayerSlot `json:"player_slot"`
-	HeroId     uint           `json:"hero_id"`
+	AccountId  uint32     `json:"account_id"`
+	PlayerSlot PlayerSlot `json:"player_slot"`
+	HeroId     uint       `json:"hero_id"`
 }
 
-func GetMatchHistory(filter MatchFilter, gameMode DotaGameMode, app int, apiKey string) ([]Match, error) {
+func GetMatchHistory(filter MatchFilter, gameMode GameMode, app int, apiKey string) ([]Match, error) {
 	getMatchHistory := steamapi.NewSteamMethod("IDOTA2Match_"+strconv.Itoa(app), "GetMatchHistory", 1)
 
 	vals := url.Values{}
@@ -109,7 +109,7 @@ func GetMatchHistory(filter MatchFilter, gameMode DotaGameMode, app int, apiKey 
 		return m, nil
 	}
 
-	// Fetched less as requested and there are still available
+	// Fetched less than requested and there are still available
 	// Start one match earlier than the earliest already available
 	filter.StartAtMatchId = m[len(m)-1].MatchId - 1
 	m2, err := GetMatchHistory(filter, gameMode, app, apiKey)

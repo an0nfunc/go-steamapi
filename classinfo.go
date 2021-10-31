@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// ClassInfo is the details of the specific classid
+// classInfoJSON are details of the specific class_id
 type classInfoJSON struct {
 	Result map[string]json.RawMessage `json:"result"`
 }
@@ -22,7 +22,6 @@ type Info struct {
 
 // GetAssetClassInfo returns asset details
 func GetAssetClassInfo(appID, classID uint64, language, apiKey string) (*Info, error) {
-
 	var getAssetClassInfo = NewSteamMethod("ISteamEconomy", "GetAssetClassInfo", 1)
 
 	vals := url.Values{}

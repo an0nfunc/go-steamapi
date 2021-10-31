@@ -2,6 +2,7 @@ package steamapi
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,25 +12,25 @@ var (
 	ErrInvalidId = errors.New("Invalid Steam ID")
 )
 
-type steamId struct {
+type SteamId struct {
 	X uint32
 	Y uint32
 	Z uint32
 }
 
-func NewIdFrom32bit(i uint32) (id steamId) {
+func NewIdFrom32bit(i uint32) (id SteamId) {
 	id.Y = i % 2
 	id.Z = i / 2
 	return
 }
 
-func NewIdFrom64bit(i uint64) (id steamId) {
+func NewIdFrom64bit(i uint64) (id SteamId) {
 	i -= 0x0110000100000000
 	id = NewIdFrom32bit(uint32(i))
 	return
 }
 
-func NewIdFromVanityUrl(vanityUrl, apiKey string) (id steamId, err error) {
+func NewIdFromVanityUrl(vanityUrl, apiKey string) (id SteamId, err error) {
 	resp, err := ResolveVanityURL(vanityUrl, apiKey)
 	if err != nil {
 		return
@@ -39,10 +40,10 @@ func NewIdFromVanityUrl(vanityUrl, apiKey string) (id steamId, err error) {
 	return
 }
 
-func NewIdFromString(s string) (id steamId, err error) {
-	validid := regexp.MustCompile("STEAM_\\d:\\d:\\d{1,}")
+func NewIdFromString(s string) (id SteamId, err error) {
+	validId := regexp.MustCompile("STEAM_\\d:\\d:\\d+")
 
-	if !validid.MatchString(s) {
+	if !validId.MatchString(s) {
 		err = ErrInvalidId
 		return
 	}
@@ -58,20 +59,16 @@ func NewIdFromString(s string) (id steamId, err error) {
 	return
 }
 
-func (id steamId) String() (s string) {
-	s = "STEAM_"
-	s += strconv.FormatUint(uint64(id.X), 10) + ":"
-	s += strconv.FormatUint(uint64(id.Y), 10) + ":"
-	s += strconv.FormatUint(uint64(id.Z), 10)
-	return
+func (id SteamId) String() (s string) {
+	return fmt.Sprintf("STEAM_%d:%d:%d", id.X, id.Y, id.Z)
 }
 
-func (id steamId) As32Bit() (i uint32) {
+func (id SteamId) As32Bit() (i uint32) {
 	i = id.Z*2 + id.Y
 	return
 }
 
-func (id steamId) As64Bit() (i uint64) {
+func (id SteamId) As64Bit() (i uint64) {
 	i = uint64(id.As32Bit()) + 0x0110000100000000
 	return
 }

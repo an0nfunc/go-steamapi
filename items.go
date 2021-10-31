@@ -60,9 +60,8 @@ type EquipInfo struct {
 	Slot  int
 }
 
-// GetPlayerItems Fetches the player summaries for the given Steam Id.
+// GetPlayerItems Fetches the player summaries for the given Steam ID.
 func GetPlayerItems(steamID uint64, appID uint64, apiKey string) (*Inventory, error) {
-
 	getPlayerItems := NewSteamMethod("IEconItems_"+strconv.FormatUint(appID, 10), "GetPlayerItems", 1)
 
 	vals := url.Values{}

@@ -1,11 +1,11 @@
 package dota
 
-type DotaGameMode int
+type GameMode int
 
 const (
 	AnyMode = -1
 
-	AllPick DotaGameMode = iota
+	AllPick GameMode = iota
 	SingleDraft
 	AllRandom
 	RandomDraft
@@ -22,19 +22,19 @@ const (
 	CompendiumMatchmaking
 )
 
-type DotaSkill uint
+type Skill uint
 
 const (
-	AnySkill DotaSkill = iota
+	AnySkill Skill = iota
 	Normal
 	High
 	VeryHigh
 )
 
-type DotaLeaverStatus uint
+type LeaverStatus uint
 
 const (
-	None DotaLeaverStatus = iota
+	None LeaverStatus = iota
 	Disconnected
 	DisconnectedTooLong
 	Abandoned
@@ -43,12 +43,12 @@ const (
 	NeverConnectedTooLong
 )
 
-type DotaLobbyType int
+type LobbyType int
 
 const (
-	Invalid DotaLobbyType = -1
+	Invalid LobbyType = -1
 
-	PublicMatchMaking DotaLobbyType = iota
+	PublicMatchMaking LobbyType = iota
 	Practice
 	Tournament
 	Tutorial
@@ -57,29 +57,31 @@ const (
 	SoloQueue
 )
 
-type DotaPlayerSlot uint8
+type PlayerSlot uint8
 
-func (d DotaPlayerSlot) IsDire() bool {
+func (d PlayerSlot) IsDire() bool {
 	if d&(1<<7) > 0 {
 		return true
 	}
 	return false
 }
 
-func (d DotaPlayerSlot) GetPosition() (p uint) {
+func (d PlayerSlot) GetPosition() (p uint) {
 	p = uint(d & ((1 << 7) - 1))
 	return
 }
 
-type DotaTeam uint
+type Team uint
 
 const (
-	Radiant DotaTeam = iota
+	Radiant Team = iota
 	Dire
 )
 
-// TODO: add methods that read information from bits
-type DotaTowerStatus uint16
+type TowerStatus uint16
+
+//TODO: add methods that read information from bits
+
+type BarracksStatus uint16
 
 // TODO: add methods that read information from bits
-type DotaBarracksStatus uint16

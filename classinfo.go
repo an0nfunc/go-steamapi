@@ -1,7 +1,9 @@
 package steamapi
 
 import (
+	"context"
 	"encoding/json"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strconv"
 )
@@ -21,7 +23,7 @@ type Info struct {
 }
 
 // GetAssetClassInfo returns asset details
-func GetAssetClassInfo(appID, classID uint64, language, apiKey string) (*Info, error) {
+func GetAssetClassInfo(appID, classID uint64, language, apiKey string, rl *rate.Limiter) (*Info, error) {
 	var getAssetClassInfo = NewSteamMethod("ISteamEconomy", "GetAssetClassInfo", 1)
 
 	vals := url.Values{}
@@ -31,6 +33,9 @@ func GetAssetClassInfo(appID, classID uint64, language, apiKey string) (*Info, e
 	vals.Add("class_count", "1")
 	vals.Add("classid0", strconv.FormatUint(classID, 10))
 
+	if err := rl.Wait(context.Background()); err != nil {
+		return nil, err
+	}
 	var resp classInfoJSON
 	err := getAssetClassInfo.Request(vals, &resp)
 	if err != nil {

@@ -1,6 +1,8 @@
 package steamapi
 
 import (
+	"context"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strings"
 )
@@ -21,7 +23,7 @@ type PlayerBan struct {
 }
 
 // GetPlayerBans takes a list of steamIDs and returns PlayerBan slice
-func GetPlayerBans(steamIDs []uint64, apiKey string) ([]PlayerBan, error) {
+func GetPlayerBans(steamIDs []uint64, apiKey string, rl *rate.Limiter) ([]PlayerBan, error) {
 	var allResp []PlayerBan
 	var getPlayerSummaries = NewSteamMethod("ISteamUser", "GetPlayerBans", 1)
 
@@ -33,6 +35,9 @@ func GetPlayerBans(steamIDs []uint64, apiKey string) ([]PlayerBan, error) {
 		vals.Add("key", apiKey)
 		vals.Add("steamids", strings.Join(strId, ","))
 
+		if err := rl.Wait(context.Background()); err != nil {
+			return nil, err
+		}
 		var resp playerBansJSON
 		err := getPlayerSummaries.Request(vals, &resp)
 		if err != nil {

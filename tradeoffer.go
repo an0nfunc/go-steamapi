@@ -13,7 +13,7 @@ import (
 type State uint
 
 const (
-	// ETradeOfferStateCreated /!\ non steam status, used to know the TO has been created
+	// ETradeOfferStateCreated /!\ non-steam status, used to know the TO has been created
 	ETradeOfferStateCreated State = 0
 	// ETradeOfferStateInvalid Invalid
 	ETradeOfferStateInvalid State = 1
@@ -21,7 +21,7 @@ const (
 	ETradeOfferStateActive State = 2
 	// ETradeOfferStateAccepted The trade offer was accepted by the recipient and items were exchanged.
 	ETradeOfferStateAccepted State = 3
-	// ETradeOfferStateCountered The recipient made a counter offer
+	// ETradeOfferStateCountered The recipient made a counteroffer
 	ETradeOfferStateCountered State = 4
 	// ETradeOfferStateExpired The trade offer was not accepted before the expiration date
 	ETradeOfferStateExpired State = 5
@@ -229,7 +229,6 @@ func IEconGetTradeOffer(apiKey string, tradeOfferID uint64) (
 
 // IEconActionTradeOffer declines a TO created by someone else
 func IEconActionTradeOffer(action string, apiKey string, tradeOfferID uint64) error {
-
 	if action != "Decline" && action != "Cancel" {
 		return fmt.Errorf("tradeoffer IEconActionTradeOffer doesn't support %v action", action)
 	}
@@ -254,18 +253,15 @@ func IEconActionTradeOffer(action string, apiKey string, tradeOfferID uint64) er
 	}
 
 	err = resp.Body.Close()
-
 	if err != nil {
 		return fmt.Errorf("tradeoffer IEcon%sTradeOffer resp.Body.Close(): error %v", action, err)
 	}
 
 	return nil
-
 }
 
 // IEconCancelTradeOffer declines a TO created by someone else
 func IEconCancelTradeOffer(apiKey string, tradeOfferID uint64) error {
-
 	resp, err := http.PostForm(
 		BaseSteamAPIURL+"/IEconService/CancelTradeOffer/v1",
 		url.Values{"key": {apiKey}, "tradeofferid": {strconv.FormatUint(tradeOfferID, 10)}},
@@ -293,5 +289,4 @@ func boolToStr(b bool) string {
 	}
 
 	return "0"
-
 }

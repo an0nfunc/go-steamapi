@@ -1,7 +1,9 @@
 package steamapi
 
 import (
+	"context"
 	"errors"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strings"
 )
@@ -73,7 +75,7 @@ type playerSummaryJSON struct {
 }
 
 // GetPlayerSummaries Fetches the player summaries for the given Steam Ids.
-func GetPlayerSummaries(ids []uint64, apiKey string) ([]PlayerSummary, error) {
+func GetPlayerSummaries(ids []uint64, apiKey string, rl *rate.Limiter) ([]PlayerSummary, error) {
 	var allResp []PlayerSummary
 	var getPlayerSummaries = NewSteamMethod("ISteamUser", "GetPlayerSummaries", 2)
 
@@ -85,6 +87,9 @@ func GetPlayerSummaries(ids []uint64, apiKey string) ([]PlayerSummary, error) {
 		vals.Add("key", apiKey)
 		vals.Add("steamids", strings.Join(strId, ","))
 
+		if err := rl.Wait(context.Background()); err != nil {
+			return nil, err
+		}
 		var resp playerSummaryJSON
 		err := getPlayerSummaries.Request(vals, &resp)
 		if err != nil {
@@ -104,12 +109,15 @@ type ResolveVanityURLResponse struct {
 }
 
 // ResolveVanityURL should return a response
-func ResolveVanityURL(vanityURL string, apiKey string) (*ResolveVanityURLResponse, error) {
+func ResolveVanityURL(vanityURL string, apiKey string, rl *rate.Limiter) (*ResolveVanityURLResponse, error) {
 	var resolveVanityURL = NewSteamMethod("ISteamUser", "ResolveVanityURL", 1)
 	data := url.Values{}
 	data.Add("key", apiKey)
 	data.Add("vanityURL", vanityURL)
 
+	if err := rl.Wait(context.Background()); err != nil {
+		return nil, err
+	}
 	var resp struct {
 		Response ResolveVanityURLResponse
 	}

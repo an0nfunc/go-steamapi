@@ -3,6 +3,7 @@ package steamapi
 import (
 	"errors"
 	"fmt"
+	"golang.org/x/time/rate"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,8 +31,8 @@ func NewIdFrom64bit(i uint64) (id SteamId) {
 	return
 }
 
-func NewIdFromVanityUrl(vanityUrl, apiKey string) (id SteamId, err error) {
-	resp, err := ResolveVanityURL(vanityUrl, apiKey)
+func NewIdFromVanityUrl(vanityUrl, apiKey string, rl *rate.Limiter) (id SteamId, err error) {
+	resp, err := ResolveVanityURL(vanityUrl, apiKey, rl)
 	if err != nil {
 		return
 	}

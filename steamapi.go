@@ -40,7 +40,7 @@ func (s SteamMethod) Request(data url.Values, v interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("steamapi %s Status code %d", s, resp.StatusCode)
 	}
 

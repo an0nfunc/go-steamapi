@@ -1,7 +1,9 @@
 package steamapi
 
 import (
+	"context"
 	"errors"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strconv"
 )
@@ -33,7 +35,7 @@ func (i *Asset) HasTag(tag string) bool {
 }
 
 // GetAssetPrices returns a list of assets with their prices
-func GetAssetPrices(appid uint64, language, currency, apiKey string) ([]Asset, error) {
+func GetAssetPrices(appid uint64, language, currency, apiKey string, rl *rate.Limiter) ([]Asset, error) {
 
 	var getAssetPrices = NewSteamMethod("ISteamEconomy", "GetAssetPrices", 1)
 
@@ -43,6 +45,9 @@ func GetAssetPrices(appid uint64, language, currency, apiKey string) ([]Asset, e
 	vals.Add("language", language)
 	vals.Add("currency", currency)
 
+	if err := rl.Wait(context.Background()); err != nil {
+		return nil, err
+	}
 	var resp storeJSON
 	err := getAssetPrices.Request(vals, &resp)
 	if err != nil {

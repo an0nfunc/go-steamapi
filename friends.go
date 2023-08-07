@@ -1,6 +1,8 @@
 package steamapi
 
 import (
+	"context"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strconv"
 )
@@ -33,8 +35,7 @@ type playerFriendsListJSON struct {
 // It returns nil if the profile is private or if there were no friends
 // found for the given relationship. In either one of both cases, no error
 // is returned.
-func GetFriendsList(steamID uint64, filter Relationship, apiKey string) ([]SteamFriend, error) {
-
+func GetFriendsList(steamID uint64, filter Relationship, apiKey string, rl *rate.Limiter) ([]SteamFriend, error) {
 	var getFriendsList = NewSteamMethod("ISteamUser", "GetFriendList", 1)
 
 	data := url.Values{}
@@ -42,6 +43,9 @@ func GetFriendsList(steamID uint64, filter Relationship, apiKey string) ([]Steam
 	data.Add("steamid", strconv.FormatUint(steamID, 10))
 	data.Add("relationship", string(filter))
 
+	if err := rl.Wait(context.Background()); err != nil {
+		return nil, err
+	}
 	var resp playerFriendsListJSON
 	err := getFriendsList.Request(data, &resp)
 	if err != nil {

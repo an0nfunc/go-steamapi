@@ -1,7 +1,9 @@
 package steamapi
 
 import (
+	"context"
 	"fmt"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strconv"
 )
@@ -61,17 +63,18 @@ type EquipInfo struct {
 }
 
 // GetPlayerItems Fetches the player summaries for the given Steam ID.
-func GetPlayerItems(steamID uint64, appID uint64, apiKey string) (*Inventory, error) {
+func GetPlayerItems(steamID uint64, appID uint64, apiKey string, rl *rate.Limiter) (*Inventory, error) {
 	getPlayerItems := NewSteamMethod("IEconItems_"+strconv.FormatUint(appID, 10), "GetPlayerItems", 1)
 
 	vals := url.Values{}
 	vals.Add("key", apiKey)
 	vals.Add("steamid", strconv.FormatUint(steamID, 10))
 
+	if err := rl.Wait(context.Background()); err != nil {
+		return nil, err
+	}
 	var resp playerItemsJSON
-
 	err := getPlayerItems.Request(vals, &resp)
-
 	if err != nil {
 		return nil, fmt.Errorf("steamapi GetPlayerItems: %v", err)
 	}

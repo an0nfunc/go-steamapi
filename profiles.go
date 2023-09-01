@@ -87,8 +87,10 @@ func GetPlayerSummaries(ids []uint64, apiKey string, rl *rate.Limiter) ([]Player
 		vals.Add("key", apiKey)
 		vals.Add("steamids", strings.Join(strId, ","))
 
-		if err := rl.Wait(context.Background()); err != nil {
-			return nil, err
+		if rl != nil {
+			if err := rl.Wait(context.Background()); err != nil {
+				return nil, err
+			}
 		}
 		var resp playerSummaryJSON
 		err := getPlayerSummaries.Request(vals, &resp)
